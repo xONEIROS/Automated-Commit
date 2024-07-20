@@ -1,0 +1,25 @@
+name: Automated Commit
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # زمان‌بندی را به دلخواه تنظیم کنید
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config --global user.email "your-email@example.com"
+        git config --global user.name "your-username"
+
+    - name: Make a commit
+      run: |
+        echo "Commit made at $(date)" >> commit-log.txt
+        git add commit-log.txt
+        git commit -m "Automated commit"
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
