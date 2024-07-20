@@ -18,9 +18,17 @@ jobs:
         git config --global user.email "xon3iros@gmail.com"
         git config --global user.name "xONEIROS"
 
+    - name: Select Random Sticker
+      id: random_sticker
+      run: |
+        LINES=$(wc -l < stickers.txt)
+        RAND=$(( ( RANDOM % LINES ) + 1 ))
+        STICKER=$(sed -n "${RAND}p" stickers.txt)
+        echo "::set-output name=sticker::$STICKER"
+
     - name: Make a commit
       run: |
-        echo "Commit made at $(date)" >> commit-log.txt
+        echo "Commit made at $(date) with sticker: ${{ steps.random_sticker.outputs.sticker }}" >> commit-log.txt
         git add commit-log.txt
-        git commit -m "Automated commit"
+        git commit -m "Automated commit with sticker: ${{ steps.random_sticker.outputs.sticker }}"
         git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
