@@ -2,8 +2,8 @@ name: Automated Commit
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # زمان‌بندی را به دلخواه تنظیم کنید
-
+    - cron: '0 0 * * *'  # تنظیم زمان‌بندی
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
