@@ -2,7 +2,7 @@ name: Automated Commit
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 */12 * * *'  
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Git
       run: |
@@ -24,11 +24,15 @@ jobs:
         LINES=$(wc -l < stickers.txt)
         RAND=$(( ( RANDOM % LINES ) + 1 ))
         STICKER=$(sed -n "${RAND}p" stickers.txt)
-        echo "::set-output name=sticker::$STICKER"
+        echo "STICKER=$STICKER" >> $GITHUB_ENV
+
+    - name: Pull latest changes
+      run: |
+        git pull origin main --rebase
 
     - name: Make a commit
       run: |
-        echo "Commit made at $(date) with sticker: ${{ steps.random_sticker.outputs.sticker }}" >> commit-log.txt
+        echo "Commit made at $(date) with sticker: ${{ env.STICKER }}" >> commit-log.txt
         git add commit-log.txt
-        git commit -m "Automated commit with sticker: ${{ steps.random_sticker.outputs.sticker }}"
+        git commit -m "Automated commit with sticker: ${{ env.STICKER }}"
         git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
